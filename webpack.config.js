@@ -10,9 +10,11 @@ var BUILD_PATH = path.resolve(__dirname, 'lib')
 module.exports = {
   entry: APP_PATH,
   output: {
-    library: 'MyTsLibrary',
+    library: 'OpenOrd',
     path: BUILD_PATH,
-    filename: 'index.js'
+    filename: 'index.js',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
 
   devtool: 'source-map',
@@ -22,7 +24,7 @@ module.exports = {
   },
 
   module: {
-    preLoaders: [ { test: /\.tsx?$/, loader: "tslint" } ],
+    preLoaders: [ { test: /\.tsx?$/, loader: "tslint", exclude: [/typings/, /node_modules/] } ],
     loaders: [ { test: /\.tsx?$/, loader: 'babel!ts-loader' } ]
   },
 

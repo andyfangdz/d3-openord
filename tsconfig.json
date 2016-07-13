@@ -3,6 +3,11 @@
     "target": "es6"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "typings",
+    "test"
+  ],
+  "files": [
+    "typings/index.d.ts"
   ]
 }

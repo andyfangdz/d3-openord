@@ -1,15 +1,16 @@
 {
-  "name": "tslib-webpack-starter",
+  "name": "d3-openord",
   "version": "0.1.0",
-  "description": "A boilerplate project for typescript + webpack + tslint + babel",
+  "description": "D3 OpenOrd",
   "main": "lib/index.js",
   "scripts": {
     "build": "webpack",
-    "test": "karma start"
+    "test": "karma start",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
-    "url": "httpshttps://github.com/itajaja/tslib-webpack-starter"
+    "url": "https://github.com/itajaja/tslib-webpack-starter"
   },
   "keywords": [
     "typescript",
@@ -18,7 +19,7 @@
     "boilerplate",
     "starter"
   ],
-  "author": "Giacomo Tagliabue",
+  "author": "Andy Fang",
   "license": "MIT",
   "devDependencies": {
     "babel": "^6.1.18",
@@ -39,5 +40,8 @@
     "tslint-loader": "^2.1.0",
     "typescript": "^1.6.2",
     "webpack": "^1.12.9"
+  },
+  "dependencies": {
+    "typescript-stl": "^1.0.0-rc.4-a"
   }
 }

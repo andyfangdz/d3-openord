@@ -1,0 +1,9 @@
+{
+  "name": "d3-openord",
+  "globalDependencies": {
+    "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
+    "chai": "github:DefinitelyTyped/DefinitelyTyped/chai/chai.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
+    "assertion-error": "github:DefinitelyTyped/DefinitelyTyped/assertion-error/assertion-error.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
+    "typescript-stl": "github:DefinitelyTyped/DefinitelyTyped/typescript-stl/typescript-stl.d.ts#de82425735f84a10b43921ae4b1d085b3752a626"
+  }
+}
