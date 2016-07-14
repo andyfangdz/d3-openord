@@ -25,7 +25,7 @@ module.exports = {
 
   module: {
     preLoaders: [ { test: /\.tsx?$/, loader: "tslint", exclude: [/typings/, /node_modules/] } ],
-    loaders: [ { test: /\.tsx?$/, loader: 'babel!ts-loader' } ]
+    loaders: [ { test: /\.tsx?$/, loader: 'babel-loader!ts-loader' } ]
   },
 
   tslint: {
@@ -34,8 +34,8 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: { warnings: false }
-    })
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compress: { warnings: false }
+    // })
   ]
 }

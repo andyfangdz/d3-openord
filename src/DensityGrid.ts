@@ -1,35 +1,4 @@
-/*
- Copyright 2007 Sandia Corporation. Under the terms of Contract
- DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- certain rights in this software.
- All rights reserved.
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are
- met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the name of Sandia National Laboratories nor the names of
- its contributors may be used to endorse or promote products derived from
- this software without specific prior written permission.
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 import Node from './Node';
-import std from 'typescript-stl';
-import Deque = std.Deque;
 
 const GRID_SIZE = 1000;
 const VIEW_SIZE = 4000;
@@ -42,26 +11,50 @@ export default class DensityGrid {
 
     private density: number[][];
     private falloff: number[][];
-    private bins: Deque<Node>[][];
+    private bins: Node[][][];
 
-    init(): void {
-        this.density = new number[GRID_SIZE][GRID_SIZE];
-        this.falloff = new number[RADIUS * 2 + 1][RADIUS * 2 + 1];
-        this.bins = new Deque<Node>[GRID_SIZE][GRID_SIZE];
+    public static getViewSize(): number {
+        return (VIEW_SIZE * 0.8) - (RADIUS / 0.25) * 2;
+    }
 
-        for (var i = -RADIUS; i <= RADIUS; i++) {
-            for (var j = -RADIUS; j <= RADIUS; j++) {
+    public init(): void {
+        this.density = [];
+        for (let i = 0; i < GRID_SIZE; i++) {
+            this.density[i] = [];
+            for (let j = 0; j < GRID_SIZE; j++) {
+                this.density[i][j] = 0;
+            }
+        }
+
+        this.falloff = [];
+        for (let i = 0; i < RADIUS * 2 + 1; i++) {
+            this.falloff[i] = [];
+            for (let j = 0; j < RADIUS * 2 + 1; j++) {
+                this.falloff[i][j] = 0;
+            }
+        }
+
+        this.bins = [];
+        for (let i = 0; i < RADIUS * 2 + 1; i++) {
+            this.bins[i] = [];
+            for (let j = 0; j < RADIUS * 2 + 1; j++) {
+                this.bins[i][j] = [];
+            }
+        }
+
+        for (let i = -RADIUS; i <= RADIUS; i++) {
+            for (let j = -RADIUS; j <= RADIUS; j++) {
                 this.falloff[i + RADIUS][j + RADIUS] =
-                    ((RADIUS - Math.abs(i)) / Radius) *
-                    ((RADIUS - Math.abs(j)) / Radius)
+                    ((RADIUS - Math.abs(i)) / RADIUS) *
+                    ((RADIUS - Math.abs(j)) / RADIUS);
             }
         }
     }
 
-    getDensity(nX: number, nY: number, fineDensity: boolean): number {
-        var xGrid: number, yGrid: number;
-        var xDist: number, yDist: number, distance: number, density: number = 0;
-        var boundary: number = 10;
+    public getDensity(nX: number, nY: number, fineDensity: boolean): number {
+        let xGrid: number, yGrid: number;
+        let xDist: number, yDist: number, distance: number, density = 0;
+        let boundary = 10;
 
         xGrid = Math.floor((nX + HALF_VIEW + 0.5) * VIEW_TO_GRID);
         yGrid = Math.floor((nY + HALF_VIEW + 0.5) * VIEW_TO_GRID);
@@ -74,13 +67,13 @@ export default class DensityGrid {
         }
 
         if (fineDensity) {
-            for (var i = yGrid - 1; i <= yGrid + 1; i++) {
-                for (var j = xGrid - 1; j <= xGrid + 1; j++) {
-                    var deque: Deque<Node> = bins[i][j];
+            for (let i = yGrid - 1; i <= yGrid + 1; i++) {
+                for (let j = xGrid - 1; j <= xGrid + 1; j++) {
+                    let deque = this.bins[i][j];
                     if (deque != null) {
-                        for (let bi = deque.begin(); !bi.equal_to(deque.end()); bi = bi.next()) {
-                            xDist = nX - bi.x;
-                            yDist = nY - bi.y;
+                        for (let k = 0; k <= deque.length; k++) {
+                            xDist = nX - deque[i].x;
+                            yDist = nY - deque[i].y;
                             distance = xDist * xDist + yDist * yDist;
                             density += 1e-4 / (distance + 1e-50);
                         }
@@ -95,9 +88,9 @@ export default class DensityGrid {
     }
 
 
-    add(n: Node, fineDensity: boolean): void {
+    public add(n: Node, fineDensity: boolean): void {
 
-        var xGrid: number, yGrid: number;
+        let xGrid: number, yGrid: number;
 
         xGrid = Math.floor((n.x + HALF_VIEW + .5) * VIEW_TO_GRID);
         yGrid = Math.floor((n.y + HALF_VIEW + .5) * VIEW_TO_GRID);
@@ -106,12 +99,12 @@ export default class DensityGrid {
         n.subY = n.y;
 
         if (fineDensity) {
-            var deque: Deque<Node> = this.bins[yGrid][xGrid];
+            let deque = this.bins[yGrid][xGrid];
             if (deque != null) {
-                deque.push_back(n);
+                deque.push(n);
             }
         } else {
-            var diam: number;
+            let diam: number;
 
             xGrid -= RADIUS;
             yGrid -= RADIUS;
@@ -119,14 +112,14 @@ export default class DensityGrid {
 
             if ((xGrid + RADIUS >= GRID_SIZE) || (xGrid < 0)
                 || (yGrid + RADIUS >= GRID_SIZE || (yGrid < 0))) {
-                throw new Error("Error: Exceeded density grid with "
-                    + "xGrid = " + xGrid + " and yGrid = " + yGrid);
+                throw new Error('Error: Exceeded density grid with '
+                    + 'xGrid = ' + xGrid + ' and yGrid = ' + yGrid);
             }
 
-            for (var i = 0; i <= diam; i++) {
-                var oldXGrid = xGrid;
+            for (let i = 0; i <= diam; i++) {
+                let oldXGrid = xGrid;
 
-                for (var j = 0; j <= diam; j++) {
+                for (let j = 0; j <= diam; j++) {
                     this.density[yGrid][xGrid] += this.falloff[i][j]; // TODO: Double-check
                     xGrid++;
                 }
@@ -136,22 +129,30 @@ export default class DensityGrid {
         }
     }
 
-    subtract(n: Node, fineFirstAdd: boolean, fineDensity: boolean): void {
-        var xGrid: number, yGrid: number;
+    public subtract(n: Node, fineFirstAdd: boolean, fineDensity: boolean): void {
+        let xGrid: number, yGrid: number;
 
         xGrid = Math.floor((n.x + HALF_VIEW + .5) * VIEW_TO_GRID);
         yGrid = Math.floor((n.y + HALF_VIEW + .5) * VIEW_TO_GRID);
 
         if (fineDensity && !fineFirstAdd) {
-            var deque = bins[yGrid][xGrid];
+            let deque = this.bins[yGrid][xGrid];
             if (deque != null) {
-                deque.pop_front();
+                deque.unshift();
             }
         } else {
-            var diam: number = 2 * RADIUS;
-
-
+            let diam = 2 * RADIUS;
+            for (let i = 0; i <= diam; i++) {
+                let oldXGrid = xGrid;
+                for (let j = 0; j <= diam; j++) {
+                    this.density[yGrid][xGrid] -= this.falloff[i][j];
+                    xGrid++;
+                }
+                yGrid++;
+                xGrid = oldXGrid;
+            }
         }
-
     }
+
+
 }

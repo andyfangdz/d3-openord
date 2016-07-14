@@ -3,13 +3,13 @@
  */
 
 export default class Node {
-    id: number;
-    fixed: boolean;
-    x: number;
-    y: number;
-    subX: number;
-    subY: number;
-    energy: number;
+    public id: number;
+    public fixed: boolean;
+    public x: number;
+    public y: number;
+    public subX: number;
+    public subY: number;
+    public energy: number;
 
     constructor(id: number) {
         this.id = id;
@@ -19,7 +19,7 @@ export default class Node {
         this.energy = 0;
     }
 
-    clone() {
+    public clone() {
         return Object.assign({}, this);
     }
 

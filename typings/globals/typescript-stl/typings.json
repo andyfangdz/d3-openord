@@ -1,8 +1,8 @@
 {
   "resolution": "main",
   "tree": {
-    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/de82425735f84a10b43921ae4b1d085b3752a626/typescript-stl/typescript-stl.d.ts",
-    "raw": "github:DefinitelyTyped/DefinitelyTyped/typescript-stl/typescript-stl.d.ts#de82425735f84a10b43921ae4b1d085b3752a626",
-    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/de82425735f84a10b43921ae4b1d085b3752a626/typescript-stl/typescript-stl.d.ts"
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/a969442874d475655313f7c4722d40cd056f9238/typescript-stl/typescript-stl.d.ts",
+    "raw": "registry:dt/typescript-stl#1.0.0-rc.2+20160621062904",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/a969442874d475655313f7c4722d40cd056f9238/typescript-stl/typescript-stl.d.ts"
   }
 }
