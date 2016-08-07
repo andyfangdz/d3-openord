@@ -35,9 +35,9 @@ export default class DensityGrid {
         }
 
         this.bins = [];
-        for (let i = 0; i < RADIUS * 2 + 1; i++) {
+        for (let i = 0; i < GRID_SIZE; i++) {
             this.bins[i] = [];
-            for (let j = 0; j < RADIUS * 2 + 1; j++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
                 this.bins[i][j] = [];
             }
         }
@@ -71,9 +71,9 @@ export default class DensityGrid {
                 for (let j = xGrid - 1; j <= xGrid + 1; j++) {
                     let deque = this.bins[i][j];
                     if (deque != null) {
-                        for (let k = 0; k <= deque.length; k++) {
-                            xDist = nX - deque[i].x;
-                            yDist = nY - deque[i].y;
+                        for (let k = 0; k < deque.length; k++) {
+                            xDist = nX - deque[k].x;
+                            yDist = nY - deque[k].y;
                             distance = xDist * xDist + yDist * yDist;
                             density += 1e-4 / (distance + 1e-50);
                         }
@@ -108,7 +108,7 @@ export default class DensityGrid {
 
             xGrid -= RADIUS;
             yGrid -= RADIUS;
-            diam = 2;
+            diam = 2 * RADIUS;
 
             if ((xGrid + RADIUS >= GRID_SIZE) || (xGrid < 0)
                 || (yGrid + RADIUS >= GRID_SIZE || (yGrid < 0))) {
@@ -129,7 +129,7 @@ export default class DensityGrid {
         }
     }
 
-    public subtract(n: Node, fineFirstAdd: boolean, fineDensity: boolean): void {
+    public subtract(n: Node, firstAdd: boolean, fineFirstAdd: boolean, fineDensity: boolean): void {
         let xGrid: number, yGrid: number;
 
         xGrid = Math.floor((n.x + HALF_VIEW + .5) * VIEW_TO_GRID);
@@ -140,7 +140,9 @@ export default class DensityGrid {
             if (deque != null) {
                 deque.unshift();
             }
-        } else {
+        } else if (!firstAdd) {
+            xGrid -= RADIUS;
+            yGrid -= RADIUS;
             let diam = 2 * RADIUS;
             for (let i = 0; i <= diam; i++) {
                 let oldXGrid = xGrid;

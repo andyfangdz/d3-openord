@@ -3,6 +3,7 @@
   "globalDependencies": {
     "assertion-error": "github:DefinitelyTyped/DefinitelyTyped/assertion-error/assertion-error.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
     "chai": "github:DefinitelyTyped/DefinitelyTyped/chai/chai.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#fb2b3b1e068c9ff7d8f9b0851c08d37d96c95c38",
     "typescript-stl": "registry:dt/typescript-stl#1.0.0-rc.2+20160621062904"
   }

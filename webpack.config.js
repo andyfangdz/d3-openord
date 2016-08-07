@@ -24,7 +24,7 @@ module.exports = {
   },
 
   module: {
-    preLoaders: [ { test: /\.tsx?$/, loader: "tslint", exclude: [/typings/, /node_modules/] } ],
+      //preLoaders: [ { test: /\.tsx?$/, loader: "tslint", exclude: [/typings/, /node_modules/] } ],
     loaders: [ { test: /\.tsx?$/, loader: 'babel-loader!ts-loader' } ]
   },
 
