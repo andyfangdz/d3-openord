@@ -47,6 +47,6 @@
     "deque": "0.0.4",
     "ts-loader": "^0.8.2",
     "typescript-collections": "^1.1.2",
-    "typescript-stl": "^1.0.0-rc.4-a"
+    "typescript-stl": "^1.0.0"
   }
 }
