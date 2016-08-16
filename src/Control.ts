@@ -1,8 +1,11 @@
-import {Params, Stage} from "./Params";
+import {Params, Stage, STAGES} from "./Params";
 import Worker from "./Worker";
 /**
  * Created by andy on 8/2/16.
  */
+
+
+
 export default class Control {
     get STAGE(): number {
         return this._STAGE;
@@ -253,6 +256,11 @@ export default class Control {
 
         console.log("progress");
 
+    }
+
+    public updateParams(newParams: Params) {
+        this._params = newParams;
+        this.initStage(newParams[STAGES.get(this._STAGE)]);
     }
 
     private initStage(stage: Stage) {

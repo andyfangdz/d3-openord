@@ -1,39 +1,47 @@
 /**
  * Created by andy on 8/2/16.
  */
+export let STAGES = new Map<number, string>();
 
+STAGES.set(0, "liquid");
+STAGES.set(1, "expansion");
+STAGES.set(2, "cooldown");
+STAGES.set(3, "crunch");
+STAGES.set(5, "simmer");
+STAGES.set(6, "complete");
 export class Stage {
-    get iterations():number {
+    get iterations(): number {
         return this._iterations;
     }
 
-    set iterations(value:number) {
+    set iterations(value: number) {
         this._iterations = value;
     }
 
-    get temperature():number {
+    get temperature(): number {
         return this._temperature;
     }
 
-    set temperature(value:number) {
+    set temperature(value: number) {
         this._temperature = value;
     }
 
-    get attraction():number {
+    get attraction(): number {
         return this._attraction;
     }
 
-    set attraction(value:number) {
+    set attraction(value: number) {
         this._attraction = value;
     }
 
-    get dampingMult():number {
+    get dampingMult(): number {
         return this._dampingMult;
     }
 
-    set dampingMult(value:number) {
+    set dampingMult(value: number) {
         this._dampingMult = value;
     }
+
     private _iterations: number;
     private _temperature: number;
     private _attraction: number;
@@ -65,6 +73,7 @@ export class Params {
         this._crunch = crunch;
         this._simmer = simmer;
     }
+
     get initial(): Stage {
         return this._initial;
     }
@@ -112,6 +121,7 @@ export class Params {
     set simmer(value: Stage) {
         this._simmer = value;
     }
+
     private _initial: Stage;
     private _liquid: Stage;
     private _expansion: Stage;
@@ -121,10 +131,10 @@ export class Params {
 
     public getIterationsSum(): number {
         return this.liquid.iterations +
-                this.expansion.iterations +
-                this.cooldown.iterations +
-                this.crunch.iterations +
-                this.simmer.iterations;
+            this.expansion.iterations +
+            this.cooldown.iterations +
+            this.crunch.iterations +
+            this.simmer.iterations;
     }
 }
 
@@ -136,3 +146,41 @@ export let DEFAULT = new Params(
     new Stage(0.1, 250, 1, 0.25),
     new Stage(0.15, 250, 0.5, 0)
 );
+
+export let COARSEN = new Params(
+    new Stage(0, 2000, 10, 1),
+    new Stage(200, 2000, 2, 1),
+    new Stage(200, 2000, 10, 1),
+    new Stage(200, 2000, 1, 0.1),
+    new Stage(50, 250, 1, 0.25),
+    new Stage(100, 250, 0.5, 0)
+);
+
+export let COARSEST = new Params(
+    new Stage(0, 2000, 10, 1),
+    new Stage(200, 2000, 2, 1),
+    new Stage(200, 2000, 10, 1),
+    new Stage(200, 2000, 1, 0.1),
+    new Stage(200, 250, 1, 0.25),
+    new Stage(100, 250, 0.5, 0)
+);
+
+export let REFINE = new Params(
+    new Stage(0, 50, 0.5, 0),
+    new Stage(0, 2000, 2, 1),
+    new Stage(50, 500, 0.1, 0.25),
+    new Stage(50, 200, 1, 0.1),
+    new Stage(50, 250, 1, 0.25),
+    new Stage(0, 250, 0.5, 0)
+);
+export let FINAL = new Params(
+    new Stage(0, 50, 0.5, 0),
+    new Stage(0, 2000, 2, 1),
+    new Stage(50, 50, 0.1, 0.25),
+    new Stage(50, 200, 1, 0.1),
+    new Stage(50, 250, 1, 0.25),
+    new Stage(25, 250, 0.5, 0)
+);
+export let Presets = {
+    DEFAULT, COARSEN, COARSEST, REFINE, FINAL
+};

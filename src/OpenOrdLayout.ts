@@ -25,7 +25,7 @@ export default class OpenOrdLayout {
 
     public resetPropertiesValues() {
         this.edgeCut = 0.8;
-        this.numIterations = 750;
+        this.numIterations = 1000;
         this.running = true;
         this.realTime = 0.2;
         this.param = DEFAULT;
@@ -119,6 +119,11 @@ export default class OpenOrdLayout {
             this.worker.done = true;
             this.endAlgo();
         }
+    }
+
+    public updateParams(newParams: Params): void {
+        this.param = newParams;
+        this.control.updateParams(newParams);
     }
 
     public writeBack(): void {
