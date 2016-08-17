@@ -14,7 +14,7 @@
         }
 
         .left-control {
-            box-sizing: content-box;
+            box-sizing: border-box;
             width: 300px;
             height: 100vh;
             float: left;
@@ -26,6 +26,13 @@
 
         .start-btn {
             margin-bottom: 20px;
+        }
+
+        .right-content {
+            float: left;
+            position: relative;
+            height: 100vh;
+            width: calc(100vw - 300px);
         }
 
     </style>
@@ -163,15 +170,44 @@
     <hr/>
 </div>
 <div class="right-content">
-    <svg width="960" height="600"></svg>
 </div>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="lib/index.js"></script>
 <script>
+    function backingScale(context) {
+        if ('devicePixelRatio' in window) {
+            if (window.devicePixelRatio > 1) {
+                return window.devicePixelRatio;
+            }
+        }
+        return 1;
+    }
+    var rightBox = $('.right-content');
+    var width = rightBox.outerWidth(), height = rightBox.outerHeight();
+    var offsetX = 0, offsetY = 0, zoomScale = 1;
+    var deviceScale = backingScale();
 
-    var svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
+    var canvas = d3.select(".right-content")
+            .append("canvas")
+            .attr("width", width)
+            .attr("height", height)
+            .call(d3.zoom().scaleExtent([1, 8])
+                    .on("zoom", zoom));
+
+    var rawCanvas = canvas.node();
+    var context = rawCanvas.getContext("2d");
+
+    function zoom() {
+        offsetX = d3.event.transform.x;
+        offsetY = d3.event.transform.y;
+        zoomScale = d3.event.transform.k;
+        context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+        context.clearRect(0, 0, rawCanvas.width, rawCanvas.height);
+        context.translate(offsetX, offsetY);
+        context.scale(zoomScale, zoomScale);
+        ticked();
+    }
+
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -184,41 +220,15 @@
 
     d3.json("miserables.json", function (error, graph) {
         if (error) throw error;
-        var link = svg.append("g")
-                .attr("class", "links")
-                .selectAll("line")
-                .data(graph.links)
-                .enter().append("line")
-                .attr("stroke-width", function (d) {
-                    return Math.sqrt(d.value);
-                });
 
-        var node = svg.append("g")
-                .attr("class", "nodes")
-                .selectAll("circle")
-                .data(graph.nodes)
-                .enter().append("circle")
-                .attr("r", 5)
-                .attr("fill", function (d) {
-                    return color(d.group);
-                })
-                .call(d3.drag()
-                        .on("start", dragstarted)
-                        .on("drag", dragged)
-                        .on("end", dragended));
-
-        node.append("title")
-                .text(function (d) {
-                    return d.id;
-                });
-
-        svg.call(d3.zoom()
-                .on("zoom", function () {
-                    var transform = d3.event.transform;
-                    node.attr("transform", "translate(" + transform.x + "," + transform.y + ")");
-                    link.attr("transform", "translate(" + transform.x + "," + transform.y + ")");
-                })
-        );
+        var scaleFactor = backingScale(rawCanvas);
+        if (scaleFactor > 1) {
+            rawCanvas.width = width * scaleFactor;
+            rawCanvas.height = height * scaleFactor;
+            rawCanvas.style.width = width + "px";
+            rawCanvas.style.height = height + "px";
+            context.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
 
 
         simulation
@@ -230,27 +240,24 @@
 
 
         function ticked() {
-            link
-                    .attr("x1", function (d) {
-                        return d.source.x;
-                    })
-                    .attr("y1", function (d) {
-                        return d.source.y;
-                    })
-                    .attr("x2", function (d) {
-                        return d.target.x;
-                    })
-                    .attr("y2", function (d) {
-                        return d.target.y;
-                    });
+            context.clearRect(0, 0, width, height);
+            context.strokeStyle = "#ccc";
+            context.beginPath();
+            graph.links.forEach(function(d) {
+                context.moveTo(d.source.x, d.source.y);
+                context.lineTo(d.target.x, d.target.y);
+            });
+            context.stroke();
+            context.fillStyle = "steelblue";
 
-            node
-                    .attr("cx", function (d) {
-                        return d.x;
-                    })
-                    .attr("cy", function (d) {
-                        return d.y;
-                    });
+            graph.nodes.forEach(function(d) {
+                context.fillStyle = color(d.group);
+                context.beginPath();
+                context.arc(d.x, d.y, 4.5, 0, 2 * Math.PI);
+                context.closePath();
+                context.fill();
+            });
+
             //console.log(graph.nodes[0]);
         }
 
@@ -259,23 +266,6 @@
         window.graph = graph;
         jsonloaded();
     });
-
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
 
     function updateParamsInput(param) {
         $('#initial-iterations').val(param.initial.iterations);
@@ -379,9 +369,11 @@
         updateParamsToOpenOrd(buildParamFromInput());
     }
     function jsonloaded() {
-        window.Layout = new OpenOrd.OpenOrdLayout();
-        window.Layout.resetPropertiesValues();
-        window.Layout.initAlgo(window.graph);
+        window.Layout = new OpenOrd.OpenOrdLayout(window.graph, {
+            offsetX: width / 2,
+            offsetY: height / 2,
+            scale: 3
+        });
         updatePresets();
         updateParamsInput(window.Layout.param);
         $('select').material_select();
@@ -389,7 +381,7 @@
             selectPreset($('#presents-select').val());
         })
     }
-    function start() {
+    function realStart() {
         simulation.stop();
         var iterations = 0;
         var its = document.getElementById("its");
@@ -397,14 +389,24 @@
         function animate() {
             if (iterations < 1000) {
                 window.Layout.goAlgo();
-                ticked();
                 iterations++;
+//                window.Layout.writeBack();
+//                ticked();
+//                its.textContent = iterations.toString();
+//                window.requestAnimationFrame(animate);
+                animate();
+            } else {
+                window.Layout.writeBack();
+                ticked();
                 its.textContent = iterations.toString();
-                window.requestAnimationFrame(animate);
             }
         }
 
         window.requestAnimationFrame(animate);
+    }
+    function start() {
+        ticked();
+        window.requestAnimationFrame(realStart);
     }
 </script>
 </body>

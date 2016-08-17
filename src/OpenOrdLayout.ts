@@ -6,7 +6,27 @@ import Worker from "./Worker";
 /**
  * Created by andy on 8/2/16.
  */
+
+export interface InputConfig {
+    offsetX: number,
+    offsetY: number,
+    scale: number,
+    iterations: number,
+    param: Params
+}
+
 export default class OpenOrdLayout {
+    constructor(inputGraph: InputGraph, config: InputConfig) {
+        this.inputGraph = inputGraph;
+        let {offsetX, offsetY, scale, param, iterations} = config;
+        this.offsetX = offsetX || 0;
+        this.offsetY = offsetY || 0;
+        this.scale = scale || 1;
+        this.param = param || DEFAULT;
+        this.numIterations = iterations || 750;
+        this.resetPropertiesValues();
+        this.initAlgo();
+    }
 
     private running = true;
 
@@ -14,6 +34,10 @@ export default class OpenOrdLayout {
     private edgeCut: number;
     private numIterations: number;
     private realTime: number;
+
+    private offsetX: number;
+    private offsetY: number;
+    private scale: number;
 
 
     private worker: Worker;
@@ -25,18 +49,15 @@ export default class OpenOrdLayout {
 
     public resetPropertiesValues() {
         this.edgeCut = 0.8;
-        this.numIterations = 1000;
         this.running = true;
         this.realTime = 0.2;
-        this.param = DEFAULT;
     }
 
-    public initAlgo(inputGraph: InputGraph) {
-        this.inputGraph = inputGraph;
+    public initAlgo() {
         if (this.param.getIterationsSum() != 1) {
             this.param = DEFAULT;
         }
-        let numNodes = inputGraph.nodes.length;
+        let numNodes = this.inputGraph.nodes.length;
         let nodes: Node[] = [];
         for (var i = 0; i < numNodes; i++) {
             nodes.push(new Node(0));
@@ -47,7 +68,7 @@ export default class OpenOrdLayout {
         }
         let idMap = new Map<number, number>();
         for (var i = 0; i < numNodes; i++ ) {
-            let node = inputGraph.nodes[i];
+            let node = this.inputGraph.nodes[i];
             nodes[i].id = i;
             nodes[i].x = node.x;
             nodes[i].y = node.y;
@@ -56,9 +77,9 @@ export default class OpenOrdLayout {
         }
 
         let highestSimilarity = -Infinity;
-        let edges = inputGraph.links.length;
+        let edges = this.inputGraph.links.length;
         for (var i = 0; i < edges; i++) {
-            let edge = inputGraph.links[i];
+            let edge = this.inputGraph.links[i];
             if (edge.source != edge.target) {
                 let weight = 1; //TODO: custom weight
                 let source = idMap.get(edge.source.index);
@@ -114,7 +135,7 @@ export default class OpenOrdLayout {
         //}
         this.control.updateStage(this.worker.getTotEnergy());
         this.control.initWorker(this.worker);
-        this.writeBack();
+        //this.writeBack();
         if (!this.canAlgo()) {
             this.worker.done = true;
             this.endAlgo();
@@ -129,8 +150,8 @@ export default class OpenOrdLayout {
     public writeBack(): void {
         for (let i = 0; i < this.inputGraph.nodes.length; i++) {
             let n = this.worker.positions[i];
-            this.inputGraph.nodes[i].x = n.x * 3 + 480;
-            this.inputGraph.nodes[i].y = n.y * 3 + 300;
+            this.inputGraph.nodes[i].x = n.x * this.scale + this.offsetX;
+            this.inputGraph.nodes[i].y = n.y * this.scale + this.offsetY;
         }
     }
 

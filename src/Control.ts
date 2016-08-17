@@ -246,15 +246,11 @@ export default class Control {
         } else {
             this._realIterations = Math.floor(this._realParm * fullCompIters);
         }
-        console.log("Real iterations " + this._realIterations);
+        //console.log("Real iterations " + this._realIterations);
 
-        if (this._realIterations > 0) {
-            this._realFixed = true;
-        } else {
-            this._realFixed = false;
-        }
+        this._realFixed = this._realIterations > 0;
 
-        console.log("progress");
+        //console.log("progress");
 
     }
 
