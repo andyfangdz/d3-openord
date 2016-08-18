@@ -149,37 +149,37 @@ export let DEFAULT = new Params(
 
 export let COARSEN = new Params(
     new Stage(0, 2000, 10, 1),
-    new Stage(200, 2000, 2, 1),
-    new Stage(200, 2000, 10, 1),
-    new Stage(200, 2000, 1, 0.1),
-    new Stage(50, 250, 1, 0.25),
-    new Stage(100, 250, 0.5, 0)
+    new Stage(0.2, 2000, 2, 1),
+    new Stage(0.2, 2000, 10, 1),
+    new Stage(0.2, 2000, 1, 0.1),
+    new Stage(0.05, 250, 1, 0.25),
+    new Stage(0.1, 250, 0.5, 0)
 );
 
 export let COARSEST = new Params(
     new Stage(0, 2000, 10, 1),
-    new Stage(200, 2000, 2, 1),
-    new Stage(200, 2000, 10, 1),
-    new Stage(200, 2000, 1, 0.1),
-    new Stage(200, 250, 1, 0.25),
-    new Stage(100, 250, 0.5, 0)
+    new Stage(0.2, 2000, 2, 1),
+    new Stage(0.2, 2000, 10, 1),
+    new Stage(0.2, 2000, 1, 0.1),
+    new Stage(0.2, 250, 1, 0.25),
+    new Stage(0.1, 250, 0.5, 0)
 );
 
 export let REFINE = new Params(
     new Stage(0, 50, 0.5, 0),
     new Stage(0, 2000, 2, 1),
-    new Stage(50, 500, 0.1, 0.25),
-    new Stage(50, 200, 1, 0.1),
-    new Stage(50, 250, 1, 0.25),
+    new Stage(0.05, 500, 0.1, 0.25),
+    new Stage(0.05, 200, 1, 0.1),
+    new Stage(0.05, 250, 1, 0.25),
     new Stage(0, 250, 0.5, 0)
 );
 export let FINAL = new Params(
     new Stage(0, 50, 0.5, 0),
     new Stage(0, 2000, 2, 1),
-    new Stage(50, 50, 0.1, 0.25),
-    new Stage(50, 200, 1, 0.1),
-    new Stage(50, 250, 1, 0.25),
-    new Stage(25, 250, 0.5, 0)
+    new Stage(0.05, 50, 0.1, 0.25),
+    new Stage(0.05, 200, 1, 0.1),
+    new Stage(0.05, 250, 1, 0.25),
+    new Stage(0.025, 250, 0.5, 0)
 );
 export let Presets = {
     DEFAULT, COARSEN, COARSEST, REFINE, FINAL
