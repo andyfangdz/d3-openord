@@ -39,7 +39,7 @@
     "preprocessor-loader": "^1.0.5",
     "strip-loader": "^0.1.2",
     "ts-loader": "^0.8.2",
-    "tslint": "^3.0.0",
+    "tslint": "^4.5.0",
     "tslint-loader": "^2.1.0",
     "typescript": "^1.8.10",
     "webpack": "^1.12.9"
