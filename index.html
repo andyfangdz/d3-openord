@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pilot Power Curve Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>Pilot Power Curve Explorer</h1>
+        <p>
+          Explore how drag, power required, and power available interact. See how
+          altitude and available power affect best angle (Vx), best rate (Vy), and best glide (Vg).
+        </p>
+      </header>
+
+      <section class="controls">
+        <div class="control-group">
+          <h2>Aircraft</h2>
+          <label>
+            Mass m (kg)
+            <input id="massKg" type="number" step="1" min="100" value="1043" />
+          </label>
+          <label>
+            Wing area S (m²)
+            <input id="wingArea" type="number" step="0.1" min="5" value="16.2" />
+          </label>
+          <label>
+            Aspect ratio AR
+            <input id="aspectRatio" type="number" step="0.1" min="4" value="7.3" />
+          </label>
+          <label>
+            Oswald efficiency e
+            <input id="oswald" type="number" step="0.01" min="0.5" max="0.95" value="0.80" />
+          </label>
+          <label>
+            Parasite drag C<sub>D0</sub>
+            <input id="cd0" type="number" step="0.001" min="0.010" max="0.080" value="0.030" />
+          </label>
+        </div>
+
+        <div class="control-group">
+          <h2>Powerplant</h2>
+          <label>
+            Max engine power at sea level (kW)
+            <input id="powerKw" type="number" step="1" min="20" value="134" />
+          </label>
+          <label>
+            Prop efficiency η<sub>p</sub>
+            <input id="propEff" type="number" step="0.01" min="0.5" max="0.95" value="0.80" />
+          </label>
+          <label>
+            Throttle (0–1)
+            <input id="throttle" type="range" min="0" max="1" step="0.01" value="1" />
+            <span id="throttleVal">1.00</span>
+          </label>
+          <label>
+            Power altitude model
+            <select id="powerModel">
+              <option value="na">Normally aspirated (∝ σ)</option>
+              <option value="constant">Constant with altitude</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <h2>Flight Conditions</h2>
+          <label>
+            Altitude (ft)
+            <input id="altitudeFt" type="number" step="100" min="0" max="20000" value="0" />
+          </label>
+          <label>
+            Speed range (KIAS)
+            <input id="minKias" type="number" step="1" min="20" max="200" value="35" />
+            to
+            <input id="maxKias" type="number" step="1" min="40" max="220" value="140" />
+          </label>
+          <label class="inline">
+            Points
+            <input id="numPoints" type="number" step="10" min="50" max="1000" value="300" />
+          </label>
+        </div>
+      </section>
+
+      <section class="results">
+        <div class="metrics">
+          <div class="metric"><span>Vg (best glide):</span> <strong id="vgText">–</strong></div>
+          <div class="metric"><span>Vx (best angle):</span> <strong id="vxText">–</strong></div>
+          <div class="metric"><span>Vy (best rate):</span> <strong id="vyText">–</strong></div>
+          <div class="metric"><span>Max ROC:</span> <strong id="rocText">–</strong></div>
+          <div class="metric"><span>Max climb angle:</span> <strong id="gammaText">–</strong></div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Drag and Thrust vs IAS</h3>
+          <canvas id="dragChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3>Power Required and Available vs IAS</h3>
+          <canvas id="powerChart"></canvas>
+        </div>
+
+        <div class="explain">
+          <h3>What you're seeing</h3>
+          <ul>
+            <li><strong>Drag curve</strong>: Parasite drag rises with speed; induced drag falls with speed. Their sum has a minimum at <strong>Vg</strong> (best glide, max L/D).</li>
+            <li><strong>Power required</strong>: D × V (true). At higher altitude, for the same IAS, true airspeed is higher, so more power is required.</li>
+            <li><strong>Power available</strong>: For a propeller aircraft, power at the prop is roughly flat with speed and drops with altitude if normally aspirated.</li>
+            <li><strong>Vx</strong>: Speed where <em>thrust excess</em> (T<sub>a</sub> − D) is max → steepest climb angle.</li>
+            <li><strong>Vy</strong>: Speed where <em>power excess</em> (P<sub>a</sub> − P<sub>r</sub>) is max → highest climb rate.</li>
+            <li><strong>Altitude effects</strong>: As altitude increases, power available falls and power required rises (for a given IAS). Vy moves toward Vg and climb performance drops; Vx also trends toward Vg.</li>
+          </ul>
+        </div>
+      </section>
+
+      <footer>
+        <span>Assumptions: standard day ISA, prop aircraft, steady level for drag curve. Educational model, not for flight planning.</span>
+      </footer>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+  </html>
+
